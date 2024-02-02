@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                         product.price.toString(),
                       ),
                       trailing: Text(
-                        '\$ ${product.quantity.toString()}',
+                        '₹ ${product.quantity.toString()}',
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),

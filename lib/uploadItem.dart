@@ -210,7 +210,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
               children: [
                 MyTextFieldFormWidget(
                   hintText: 'Product Name',
-                  controller: productImageController,
+                  controller: productNameController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Name';
@@ -230,7 +230,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                 ),
                 MyTextFieldFormWidget(
                   hintText: 'Product Image URL',
-                  controller: productIdController,
+                  controller: productImageController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Image URL';
@@ -241,7 +241,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                 MyTextFieldFormWidget(
                   keyboardType: TextInputType.number,
                   hintText: 'Product Old Price',
-                  controller: productNameController,
+                  controller: productOldPriceController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Old Price';
@@ -251,7 +251,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                 ),
                 MyTextFieldFormWidget(
                   keyboardType: TextInputType.number,
-                  controller: productOldPriceController,
+                  controller: productPriceController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Price';
@@ -262,7 +262,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                 ),
                 MyTextFieldFormWidget(
                   keyboardType: TextInputType.number,
-                  controller: productPriceController,
+                  controller: productRateController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Rate';
