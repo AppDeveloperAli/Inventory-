@@ -1,16 +1,20 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inventory/main.dart';
 import 'package:inventory/widget/textfield.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UploadItemsScreen extends StatefulWidget {
   String title;
-  String? image;
+  // String? image;
+  final File? imag;
 
-  UploadItemsScreen({super.key, required this.title, this.image});
+  UploadItemsScreen({super.key, required this.title, this.imag});
 
   @override
   State<UploadItemsScreen> createState() => _UploadItemsScreenState();
@@ -35,144 +39,311 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
 
   String? documentId;
 
+  Future<String?> _uploadImageToFirebase(File imageFile) async {
+    try {
+      final firebase_storage.Reference storageRef = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child("product_images");
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final uploadTask =
+          storageRef.child("product_$timestamp.jpg").putFile(imageFile);
+
+      // Wait for the upload to complete
+      final TaskSnapshot taskSnapshot = await uploadTask;
+
+      // Get the download URL
+      final downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+      return downloadURL;
+    } catch (e) {
+      print("Error uploading image to Firebase Storage: $e");
+      return null;
+    }
+  }
+
+  File? _imageProd;
+
+  Future<void> _getImage() async {
+    final imagePicker = ImagePicker();
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageProd = File(pickedFile.path);
+      });
+    }
+  }
+
   void uploadData() async {
     setState(() {
       isLoading = true;
     });
+
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-      // Query the collection based on categoryName
-      QuerySnapshot querySnapshot = await firestore
-          .collection('categories')
-          .where('categoryName', isEqualTo: widget.title)
-          .get();
+      // Check if widget.imag is not null before proceeding with image upload
+      final downloadURL = widget.imag != null
+          ? await _uploadImageToFirebase(widget.imag!)
+          : null;
 
-      // Use the first document ID found (assuming categoryName is unique)
-      String? documentId =
-          querySnapshot.docs.isNotEmpty ? querySnapshot.docs[0].id : null;
+      // Check if downloadURL is not null before proceeding
+      if (downloadURL != null) {
+        final downloadURLProd = await _uploadImageToFirebase(_imageProd!);
 
-      if (documentId != null) {
-        Map<String, dynamic> productData = {
-          'productCategory': widget.title,
-          'productDescription': productDescriptionController.text,
-          'productId': null,
-          'productImage': productImageController.text,
-          'productName': productNameController.text,
-          'productOldPrice': _parseDouble(productOldPriceController.text),
-          'productPrice': _parseDouble(productPriceController.text),
-          'productRate': _parseInt(productRateController.text),
-        };
-
-        // Upload data to Firestore and get the DocumentReference
-        DocumentReference docRef = await firestore
+        // Query the collection based on categoryName
+        QuerySnapshot querySnapshot = await firestore
             .collection('categories')
-            .doc(documentId)
-            .collection(widget.title)
-            .add(productData);
+            .where('categoryName', isEqualTo: widget.title)
+            .get();
 
-        // Update the 'productId' field in your productData map with the sub-collection document ID
-        String subDocId = docRef.id;
-        productData['productId'] = subDocId;
+        // Use the first document ID found (assuming categoryName is unique)
+        String? documentId =
+            querySnapshot.docs.isNotEmpty ? querySnapshot.docs[0].id : null;
 
-        // Update the data in Firestore with the correct 'productId'
-        await firestore
-            .collection('categories')
-            .doc(documentId)
-            .collection(widget.title)
-            .doc(subDocId)
-            .update({'productId': subDocId});
+        if (documentId != null) {
+          Map<String, dynamic> productData = {
+            'productCategory': widget.title,
+            'productDescription': productDescriptionController.text,
+            'productId': null,
+            'productImage': downloadURLProd,
+            'productName': productNameController.text,
+            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productPrice': _parseDouble(productPriceController.text),
+            'productRate': _parseInt(productRateController.text),
+          };
 
-        // Clear text fields after successful upload
-        productDescriptionController.clear();
-        productIdController.clear();
-        productImageController.clear();
-        productNameController.clear();
-        productOldPriceController.clear();
-        productPriceController.clear();
-        productRateController.clear();
+          // Upload data to Firestore and get the DocumentReference
+          DocumentReference docRef = await firestore
+              .collection('categories')
+              .doc(documentId)
+              .collection(widget.title)
+              .add(productData);
 
-        // Show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Data uploaded successfully'),
-          ),
-        );
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.pop(context);
+          // Update the 'productId' field in your productData map with the sub-collection document ID
+          String subDocId = docRef.id;
+          productData['productId'] = subDocId;
+
+          // Update the data in Firestore with the correct 'productId'
+          await firestore
+              .collection('categories')
+              .doc(documentId)
+              .collection(widget.title)
+              .doc(subDocId)
+              .update({'productId': subDocId});
+
+          // Clear text fields after successful upload
+          productDescriptionController.clear();
+          productIdController.clear();
+          productImageController.clear();
+          productNameController.clear();
+          productOldPriceController.clear();
+          productPriceController.clear();
+          productRateController.clear();
+
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Data uploaded successfully'),
+            ),
+          );
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.pop(context);
+        } else {
+          CollectionReference categoriesCollection =
+              FirebaseFirestore.instance.collection('categories');
+
+          Map<String, dynamic> mainCollectionData = {
+            'categoryImage': downloadURL,
+            'categoryName': widget.title,
+            'subcollectionData': null,
+          };
+
+          // Add data to the main parent collection
+          DocumentReference mainCollectionRef =
+              await categoriesCollection.add(mainCollectionData);
+
+          // Reference to the subcollection within each category
+          CollectionReference subcollectionRef =
+              mainCollectionRef.collection(widget.title);
+
+          Map<String, dynamic> subcollectionData = {
+            'productCategory': widget.title,
+            'productDescription': productDescriptionController.text,
+            'productId': null,
+            'productImage': downloadURLProd,
+            'productName': productNameController.text,
+            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productPrice': _parseDouble(productPriceController.text),
+            'productRate': _parseInt(productRateController.text),
+          };
+
+          // Update the main document with the subcollection data
+          await mainCollectionRef
+              .update({'subcollectionData': subcollectionData});
+
+          // Upload data to the subcollection
+          DocumentReference docRef =
+              await subcollectionRef.add(subcollectionData);
+
+          // Update the 'productId' field in your productData map with the sub-collection document ID
+          String subDocId = docRef.id;
+          subcollectionData['productId'] = subDocId;
+
+          // Update the data in Firestore with the correct 'productId'
+          await subcollectionRef.doc(subDocId).update({'productId': subDocId});
+
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.pushAndRemoveUntil(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => const MainScreen(),
+            ),
+            (route) => false,
+          );
+        }
       } else {
-        // Reference to the main parent collection "categories"
-        CollectionReference categoriesCollection =
-            FirebaseFirestore.instance.collection('categories');
+        final downloadURLProd = await _uploadImageToFirebase(_imageProd!);
 
-// Data to be added to the main parent collection
-        Map<String, dynamic> mainCollectionData = {
-          'categoryImage': widget.image,
-          'categoryName': widget.title,
-          // Add any other fields you want in the main collection
-          // ...
+        // Query the collection based on categoryName
+        QuerySnapshot querySnapshot = await firestore
+            .collection('categories')
+            .where('categoryName', isEqualTo: widget.title)
+            .get();
 
-          // Add a placeholder for the subcollection data
-          'subcollectionData': null,
-        };
+        // Use the first document ID found (assuming categoryName is unique)
+        String? documentId =
+            querySnapshot.docs.isNotEmpty ? querySnapshot.docs[0].id : null;
 
-// Add data to the main parent collection
-        DocumentReference mainCollectionRef =
-            await categoriesCollection.add(mainCollectionData);
+        if (documentId != null) {
+          Map<String, dynamic> productData = {
+            'productCategory': widget.title,
+            'productDescription': productDescriptionController.text,
+            'productId': null,
+            'productImage': downloadURLProd,
+            'productName': productNameController.text,
+            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productPrice': _parseDouble(productPriceController.text),
+            'productRate': _parseInt(productRateController.text),
+          };
 
-// Reference to the subcollection within each category
-        CollectionReference subcollectionRef =
-            mainCollectionRef.collection(widget.title);
+          // Upload data to Firestore and get the DocumentReference
+          DocumentReference docRef = await firestore
+              .collection('categories')
+              .doc(documentId)
+              .collection(widget.title)
+              .add(productData);
 
-// Data to be added to the subcollection
-        Map<String, dynamic> subcollectionData = {
-          'productCategory': widget.title,
-          'productDescription': productDescriptionController.text,
-          'productId': null,
-          'productImage': productImageController.text,
-          'productName': productNameController.text,
-          'productOldPrice': _parseDouble(productOldPriceController.text),
-          'productPrice': _parseDouble(productPriceController.text),
-          'productRate': _parseInt(productRateController.text),
-        };
+          // Update the 'productId' field in your productData map with the sub-collection document ID
+          String subDocId = docRef.id;
+          productData['productId'] = subDocId;
 
-// Update the main document with the subcollection data
-        await mainCollectionRef
-            .update({'subcollectionData': subcollectionData});
+          // Update the data in Firestore with the correct 'productId'
+          await firestore
+              .collection('categories')
+              .doc(documentId)
+              .collection(widget.title)
+              .doc(subDocId)
+              .update({'productId': subDocId});
 
-// Upload data to the subcollection
-        DocumentReference docRef =
-            await subcollectionRef.add(subcollectionData);
+          // Clear text fields after successful upload
+          productDescriptionController.clear();
+          productIdController.clear();
+          productImageController.clear();
+          productNameController.clear();
+          productOldPriceController.clear();
+          productPriceController.clear();
+          productRateController.clear();
 
-// Update the 'productId' field in your productData map with the sub-collection document ID
-        String subDocId = docRef.id;
-        subcollectionData['productId'] = subDocId;
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Data uploaded successfully'),
+            ),
+          );
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.pop(context);
+        } else {
+          CollectionReference categoriesCollection =
+              FirebaseFirestore.instance.collection('categories');
 
-// Update the data in Firestore with the correct 'productId'
-        await subcollectionRef.doc(subDocId).update({'productId': subDocId});
+          Map<String, dynamic> mainCollectionData = {
+            'categoryImage': downloadURL,
+            'categoryName': widget.title,
+            'subcollectionData': null,
+          };
 
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.pushAndRemoveUntil(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => const MainScreen(),
-          ),
-          (route) => false,
-        );
+          // Add data to the main parent collection
+          DocumentReference mainCollectionRef =
+              await categoriesCollection.add(mainCollectionData);
+
+          // Reference to the subcollection within each category
+          CollectionReference subcollectionRef =
+              mainCollectionRef.collection(widget.title);
+
+          Map<String, dynamic> subcollectionData = {
+            'productCategory': widget.title,
+            'productDescription': productDescriptionController.text,
+            'productId': null,
+            'productImage': downloadURLProd,
+            'productName': productNameController.text,
+            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productPrice': _parseDouble(productPriceController.text),
+            'productRate': _parseInt(productRateController.text),
+          };
+
+          // Update the main document with the subcollection data
+          await mainCollectionRef
+              .update({'subcollectionData': subcollectionData});
+
+          // Upload data to the subcollection
+          DocumentReference docRef =
+              await subcollectionRef.add(subcollectionData);
+
+          // Update the 'productId' field in your productData map with the sub-collection document ID
+          String subDocId = docRef.id;
+          subcollectionData['productId'] = subDocId;
+
+          // Update the data in Firestore with the correct 'productId'
+          await subcollectionRef.doc(subDocId).update({'productId': subDocId});
+
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.pushAndRemoveUntil(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => const MainScreen(),
+            ),
+            (route) => false,
+          );
+        }
       }
     } catch (error) {
       setState(() {
         isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error uploading data: $error'),
-        ),
-      );
+      if (_imageProd == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please Pick a Product Image'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading data: $error'),
+          ),
+        );
+      }
       // Handle error as needed
     }
   }
@@ -270,6 +441,31 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                     return null;
                   },
                   hintText: 'Product Rate',
+                ),
+                _imageProd != null
+                    ? Image.file(
+                        _imageProd!,
+                        height: 300,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[600],
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _getImage,
+                    child: const Text(
+                      'Pick Image',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 isLoading
