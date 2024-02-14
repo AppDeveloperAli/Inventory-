@@ -39,11 +39,12 @@ class _ItemsScreenState extends State<ItemsScreen> {
     }
   }
 
-  TextEditingController _editedNameController = TextEditingController();
-  TextEditingController _editedDescriptionController = TextEditingController();
-  TextEditingController _editedPriceController = TextEditingController();
-  TextEditingController _editedOldPriceController = TextEditingController();
-  TextEditingController _editedRateController = TextEditingController();
+  final TextEditingController _editedNameController = TextEditingController();
+  // final TextEditingController _editedDescriptionController =
+  //     TextEditingController();
+  final TextEditingController _editedPriceController = TextEditingController();
+  // TextEditingController _editedOldPriceController = TextEditingController();
+  final TextEditingController _editedRateController = TextEditingController();
 
   Future<void> editItem(
       String documentId, int index, Map<String, dynamic> data) async {
@@ -66,9 +67,9 @@ class _ItemsScreenState extends State<ItemsScreen> {
   Future<void> _showEditDialog(
       String documentId, int index, Map<String, dynamic> item) async {
     _editedNameController.text = item['productName'];
-    _editedDescriptionController.text = item['productDescription'];
+    // _editedDescriptionController.text = item['productDescription'];
     _editedPriceController.text = item['productPrice'].toString();
-    _editedOldPriceController.text = item['productOldPrice'].toString();
+    // _editedOldPriceController.text = item['productOldPrice'].toString();
     _editedRateController.text = item['productRate'].toString();
 
     return showDialog(
@@ -83,18 +84,18 @@ class _ItemsScreenState extends State<ItemsScreen> {
                   controller: _editedNameController,
                   decoration: InputDecoration(labelText: 'Name'),
                 ),
-                TextField(
-                  controller: _editedDescriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
-                ),
+                // TextField(
+                //   controller: _editedDescriptionController,
+                //   decoration: InputDecoration(labelText: 'Description'),
+                // ),
                 TextField(
                   controller: _editedPriceController,
                   decoration: InputDecoration(labelText: 'Price'),
                 ),
-                TextField(
-                  controller: _editedOldPriceController,
-                  decoration: InputDecoration(labelText: 'Old Price'),
-                ),
+                // TextField(
+                //   controller: _editedOldPriceController,
+                //   decoration: InputDecoration(labelText: 'Old Price'),
+                // ),
                 TextField(
                   controller: _editedRateController,
                   decoration: InputDecoration(labelText: 'Rate'),
@@ -114,10 +115,10 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 // Get the edited data from the text controllers
                 Map<String, dynamic> editedData = {
                   'productName': _editedNameController.text,
-                  'productDescription': _editedDescriptionController.text,
+                  // 'productDescription': _editedDescriptionController.text,
                   'productPrice': double.parse(_editedPriceController.text),
-                  'productOldPrice':
-                      double.parse(_editedOldPriceController.text),
+                  // 'productOldPrice':
+                  //     double.parse(_editedOldPriceController.text),
                   'productRate': double.parse(_editedRateController.text),
                 };
 
@@ -232,13 +233,13 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                               '₹ ${item['productPrice'].toString()}'),
                                         ],
                                       ),
-                                      Row(
-                                        children: [
-                                          const Text('Old Price : '),
-                                          Text(
-                                              '₹ ${item['productOldPrice'].toString()}'),
-                                        ],
-                                      ),
+                                      // Row(
+                                      //   children: [
+                                      //     const Text('Old Price : '),
+                                      //     Text(
+                                      //         '₹ ${item['productOldPrice'].toString()}'),
+                                      //   ],
+                                      // ),
                                       Row(
                                         children: [
                                           const Text('Rate : '),
