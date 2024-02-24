@@ -205,65 +205,62 @@ class _ItemsScreenState extends State<ItemsScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 10),
-                                child: Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Text('Name : '),
-                                          SizedBox(
-                                            width: 120,
-                                            child: Text(
-                                              itemName,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text('Name : '),
+                                        SizedBox(
+                                          width: 120,
+                                          child: Text(
+                                            itemName,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ],
-                                      ),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Description : '),
-                                      //     Text(
-                                      //       item['productDescription'],
-                                      //       overflow: TextOverflow.ellipsis,
-                                      //       maxLines: 1,
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Units : '),
-                                      //     Text(
-                                      //         '₹ ${item['productUnits']..toString()}'),
-                                      //   ],
-                                      // ),
-                                      Row(
-                                        children: [
-                                          const Text('Price : '),
-                                          Text(
-                                              '₹ ${item['productPrice'].toString()}'),
-                                        ],
-                                      ),
-                                      // Row(
-                                      //   children: [
-                                      //     const Text('Old Price : '),
-                                      //     Text(
-                                      //         '₹ ${item['productOldPrice'].toString()}'),
-                                      //   ],
-                                      // ),
-                                      Row(
-                                        children: [
-                                          const Text('Rate : '),
-                                          Text(
-                                              '₹ ${item['productRate'].toString()}'),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                        ),
+                                      ],
+                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     const Text('Description : '),
+                                    //     Text(
+                                    //       item['productDescription'],
+                                    //       overflow: TextOverflow.ellipsis,
+                                    //       maxLines: 1,
+                                    //     ),
+                                    //   ],
+                                    // ),
+                                    // Row(
+                                    //   children: [
+                                    //     const Text('Units : '),
+                                    //     Text(
+                                    //         '₹ ${item['productUnits']..toString()}'),
+                                    //   ],
+                                    // ),
+                                    Row(
+                                      children: [
+                                        const Text('Price : '),
+                                        Text(
+                                            '₹ ${item['productPrice'].toString()}'),
+                                      ],
+                                    ),
+                                    // Row(
+                                    //   children: [
+                                    //     const Text('Old Price : '),
+                                    //     Text(
+                                    //         '₹ ${item['productOldPrice'].toString()}'),
+                                    //   ],
+                                    // ),
+                                    Row(
+                                      children: [
+                                        const Text('Rate : '),
+                                        Text(
+                                            '₹ ${item['productRate'].toString()}'),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
