@@ -26,10 +26,9 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
   final TextEditingController productDescriptionController =
       TextEditingController();
   final TextEditingController productIdController = TextEditingController();
-  final TextEditingController productImageController = TextEditingController();
+  // final TextEditingController productImageController = TextEditingController();
   final TextEditingController productNameController = TextEditingController();
-  final TextEditingController productOldPriceController =
-      TextEditingController();
+  final TextEditingController productUnitsController = TextEditingController();
   final TextEditingController productPriceController = TextEditingController();
   final TextEditingController productRateController = TextEditingController();
 
@@ -110,7 +109,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
             'productId': null,
             'productImage': downloadURLProd,
             'productName': productNameController.text,
-            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productUnits': _parseDouble(productUnitsController.text),
             'productPrice': _parseDouble(productPriceController.text),
             'productRate': _parseInt(productRateController.text),
           };
@@ -137,9 +136,9 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
           // Clear text fields after successful upload
           productDescriptionController.clear();
           productIdController.clear();
-          productImageController.clear();
+          // productImageController.clear();
           productNameController.clear();
-          productOldPriceController.clear();
+          productUnitsController.clear();
           productPriceController.clear();
           productRateController.clear();
 
@@ -177,7 +176,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
             'productId': null,
             'productImage': downloadURLProd,
             'productName': productNameController.text,
-            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productUnits': _parseDouble(productUnitsController.text),
             'productPrice': _parseDouble(productPriceController.text),
             'productRate': _parseInt(productRateController.text),
           };
@@ -228,7 +227,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
             'productId': null,
             'productImage': downloadURLProd,
             'productName': productNameController.text,
-            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productUnits': _parseDouble(productUnitsController.text),
             'productPrice': _parseDouble(productPriceController.text),
             'productRate': _parseInt(productRateController.text),
           };
@@ -255,9 +254,9 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
           // Clear text fields after successful upload
           productDescriptionController.clear();
           productIdController.clear();
-          productImageController.clear();
+          // productImageController.clear();
           productNameController.clear();
-          productOldPriceController.clear();
+          productUnitsController.clear();
           productPriceController.clear();
           productRateController.clear();
 
@@ -295,7 +294,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
             'productId': null,
             'productImage': downloadURLProd,
             'productName': productNameController.text,
-            'productOldPrice': _parseDouble(productOldPriceController.text),
+            'productUnits': _parseDouble(productUnitsController.text),
             'productPrice': _parseDouble(productPriceController.text),
             'productRate': _parseInt(productRateController.text),
           };
@@ -399,20 +398,20 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
                     return null;
                   },
                 ),
-                MyTextFieldFormWidget(
-                  hintText: 'Product Image URL',
-                  controller: productImageController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter Product Image URL';
-                    }
-                    return null;
-                  },
-                ),
+                // MyTextFieldFormWidget(
+                //   hintText: 'Product Image URL',
+                //   controller: productImageController,
+                //   validator: (value) {
+                //     if (value!.isEmpty) {
+                //       return 'Please enter Product Image URL';
+                //     }
+                //     return null;
+                //   },
+                // ),
                 MyTextFieldFormWidget(
                   keyboardType: TextInputType.number,
-                  hintText: 'Product Old Price',
-                  controller: productOldPriceController,
+                  hintText: 'Product Units',
+                  controller: productUnitsController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter Product Old Price';

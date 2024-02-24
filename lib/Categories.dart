@@ -218,11 +218,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 controller: nameController,
                 decoration: const InputDecoration(labelText: 'Category Name'),
               ),
-              TextField(
-                controller: imageController,
-                decoration:
-                    const InputDecoration(labelText: 'Category Image URL'),
-              ),
+              // TextField(
+              //   controller: imageController,
+              //   decoration:
+              //       const InputDecoration(labelText: 'Category Image URL'),
+              // ),
             ],
           ),
           actions: [

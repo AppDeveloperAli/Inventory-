@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:inventory/uploadItem.dart';
 
 class ItemsScreen extends StatefulWidget {
@@ -213,7 +214,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                       Row(
                                         children: [
                                           const Text('Name : '),
-                                          Text(itemName),
+                                          SizedBox(
+                                            width: 120,
+                                            child: Text(
+                                              itemName,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       // Row(
@@ -224,6 +232,13 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                       //       overflow: TextOverflow.ellipsis,
                                       //       maxLines: 1,
                                       //     ),
+                                      //   ],
+                                      // ),
+                                      // Row(
+                                      //   children: [
+                                      //     const Text('Units : '),
+                                      //     Text(
+                                      //         '₹ ${item['productUnits']..toString()}'),
                                       //   ],
                                       // ),
                                       Row(
