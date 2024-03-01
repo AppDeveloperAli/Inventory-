@@ -175,146 +175,201 @@ class _ItemsScreenState extends State<ItemsScreen> {
             return const Center(child: Text('No items available'));
           }
 
+          Future<List<String>> _getImages(List<dynamic> imageUrls) async {
+            List<String> images = [];
+            for (String imageUrl in imageUrls) {
+              // Fetch image from network
+              images.add(imageUrl);
+            }
+            return images;
+          }
+
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               var item = snapshot.data!.docs[index];
               var itemName = item['productName'];
-              var itemImage = item['productImage'];
+              var itemImage = item['images'];
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
                   elevation: 5,
                   child: Container(
-                      height: 130,
+                      // height: 150,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: Image.network(itemImage),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                              Row(
+                                children: [
+                                  // SizedBox(
+                                  //   width: 100,
+                                  //   height: 100,
+                                  //   child: Image.network(itemImage),
+                                  // ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        const Text('Name : '),
-                                        SizedBox(
-                                          width: 120,
-                                          child: Text(
-                                            itemName,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                        Row(
+                                          children: [
+                                            const Text('Name : '),
+                                            SizedBox(
+                                              width: 150,
+                                              child: Text(
+                                                itemName,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        // Row(
+                                        //   children: [
+                                        //     const Text('Description : '),
+                                        //     Text(
+                                        //       item['productDescription'],
+                                        //       overflow: TextOverflow.ellipsis,
+                                        //       maxLines: 1,
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        // Row(
+                                        //   children: [
+                                        //     const Text('Units : '),
+                                        //     Text(
+                                        //         '₹ ${item['productUnits']..toString()}'),
+                                        //   ],
+                                        // ),
+                                        Row(
+                                          children: [
+                                            const Text('Price : '),
+                                            Text(
+                                                '₹ ${item['productPrice'].toString()}'),
+                                          ],
+                                        ),
+                                        // Row(
+                                        //   children: [
+                                        //     const Text('Old Price : '),
+                                        //     Text(
+                                        //         '₹ ${item['productOldPrice'].toString()}'),
+                                        //   ],
+                                        // ),
+                                        Row(
+                                          children: [
+                                            const Text('Rate : '),
+                                            Text(
+                                                '₹ ${item['productRate'].toString()}'),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                    // Row(
-                                    //   children: [
-                                    //     const Text('Description : '),
-                                    //     Text(
-                                    //       item['productDescription'],
-                                    //       overflow: TextOverflow.ellipsis,
-                                    //       maxLines: 1,
-                                    //     ),
-                                    //   ],
-                                    // ),
-                                    // Row(
-                                    //   children: [
-                                    //     const Text('Units : '),
-                                    //     Text(
-                                    //         '₹ ${item['productUnits']..toString()}'),
-                                    //   ],
-                                    // ),
-                                    Row(
-                                      children: [
-                                        const Text('Price : '),
-                                        Text(
-                                            '₹ ${item['productPrice'].toString()}'),
-                                      ],
-                                    ),
-                                    // Row(
-                                    //   children: [
-                                    //     const Text('Old Price : '),
-                                    //     Text(
-                                    //         '₹ ${item['productOldPrice'].toString()}'),
-                                    //   ],
-                                    // ),
-                                    Row(
-                                      children: [
-                                        const Text('Rate : '),
-                                        Text(
-                                            '₹ ${item['productRate'].toString()}'),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                  onTap: () {
-                                    _showEditDialog(item.id, index,
-                                        (item.data() as Map<String, dynamic>));
-                                  },
-                                  child: const Icon(Icons.edit)),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text('Delete Item ?'),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                  'You really want to delete this item ?')
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text('No')),
-                                            TextButton(
-                                                onPressed: () {
-                                                  deleteItem(item.id, index);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text('Yes'))
-                                          ],
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                      onTap: () {
+                                        _showEditDialog(
+                                            item.id,
+                                            index,
+                                            (item.data()
+                                                as Map<String, dynamic>));
+                                      },
+                                      child: const Icon(Icons.edit)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Delete Item ?'),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                      'You really want to delete this item ?')
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text('No')),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      deleteItem(
+                                                          item.id, index);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text('Yes'))
+                                              ],
+                                            );
+                                          },
                                         );
                                       },
-                                    );
-                                  },
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                ),
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               )
                             ],
-                          )
+                          ),
+                          FutureBuilder(
+                            future: _getImages(itemImage),
+                            builder: (context,
+                                AsyncSnapshot<List<String>> imageSnapshot) {
+                              if (imageSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+
+                              if (imageSnapshot.hasError ||
+                                  !imageSnapshot.hasData ||
+                                  imageSnapshot.data!.isEmpty) {
+                                return const Center(
+                                    child: Text('No images available'));
+                              }
+
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                ),
+                                itemCount: imageSnapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return Image.network(
+                                    imageSnapshot.data![index],
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ],
                       )),
                 ),

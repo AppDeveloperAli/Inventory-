@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory/items.dart';
 import 'package:inventory/makeCategory.dart';
+import 'package:inventory/snackBar.dart';
 import 'package:inventory/uploadItem.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -201,10 +202,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     String currentCategoryImage,
     String categoryId,
   ) {
-    TextEditingController nameController =
-        TextEditingController(text: currentCategoryName);
-    TextEditingController imageController =
-        TextEditingController(text: currentCategoryImage);
+    TextEditingController nameController = TextEditingController();
+    TextEditingController imageController = TextEditingController();
 
     showDialog(
       context: context,
@@ -228,53 +227,58 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           actions: [
             ElevatedButton(
               onPressed: () async {
-                await FirebaseFirestore.instance
-                    .collection('categories')
-                    .doc(categoryId)
-                    .update({
-                  'categoryName': nameController.text,
-                  'categoryImage': imageController.text,
-                });
-
-                // Fetch the documents from the old subcollection
-                QuerySnapshot<Map<String, dynamic>> documents =
-                    await FirebaseFirestore.instance
-                        .collection('categories')
-                        .doc(categoryId)
-                        .collection(currentCategoryName)
-                        .get();
-
-                // Choose a new subcollection name
-                String newSubcollectionName = nameController.text;
-
-                // Copy data from the old subcollection to the new subcollection
-                for (QueryDocumentSnapshot<Map<String, dynamic>> document
-                    in documents.docs) {
+                if (nameController.text.isNotEmpty) {
                   await FirebaseFirestore.instance
                       .collection('categories')
                       .doc(categoryId)
-                      .collection(newSubcollectionName)
-                      .doc(document.id)
-                      .set(document.data()!);
+                      .update({
+                    'categoryName': nameController.text,
+                    'categoryImage': imageController.text,
+                  });
+
+                  // Fetch the documents from the old subcollection
+                  QuerySnapshot<Map<String, dynamic>> documents =
+                      await FirebaseFirestore.instance
+                          .collection('categories')
+                          .doc(categoryId)
+                          .collection(currentCategoryName)
+                          .get();
+
+                  // Choose a new subcollection name
+                  String newSubcollectionName = nameController.text;
+
+                  // Copy data from the old subcollection to the new subcollection
+                  for (QueryDocumentSnapshot<Map<String, dynamic>> document
+                      in documents.docs) {
+                    await FirebaseFirestore.instance
+                        .collection('categories')
+                        .doc(categoryId)
+                        .collection(newSubcollectionName)
+                        .doc(document.id)
+                        .set(document.data()!);
+                  }
+
+                  // Delete the old subcollection
+                  await FirebaseFirestore.instance
+                      .collection('categories')
+                      .doc(categoryId)
+                      .collection(currentCategoryName)
+                      .get()
+                      .then(
+                    (QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+                      querySnapshot.docs.forEach(
+                        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+                          document.reference.delete();
+                        },
+                      );
+                    },
+                  );
+
+                  Navigator.pop(context); // Close the dialog
+                } else {
+                  CustomSnackBar(
+                      context, Text('Please Put Your Caregory Name First..'));
                 }
-
-                // Delete the old subcollection
-                await FirebaseFirestore.instance
-                    .collection('categories')
-                    .doc(categoryId)
-                    .collection(currentCategoryName)
-                    .get()
-                    .then(
-                  (QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-                    querySnapshot.docs.forEach(
-                      (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-                        document.reference.delete();
-                      },
-                    );
-                  },
-                );
-
-                Navigator.pop(context); // Close the dialog
               },
               child: const Text('Save'),
             ),
