@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:inventory/Categories.dart';
+import 'package:inventory/bestItems.dart';
 import 'package:inventory/firebase_options.dart';
+import 'package:inventory/specialOffers.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 void main() async {
@@ -57,6 +59,39 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => const SpecialOffers(),
+                  ));
+            },
+            child: Icon(
+              Icons.wallet_giftcard,
+              size: 40,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => const BestItems(),
+                    ));
+              },
+              child: Icon(
+                Icons.price_change,
+                size: 40,
+              ),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
         onPressed: () {
