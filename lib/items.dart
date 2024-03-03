@@ -90,6 +90,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 //   decoration: InputDecoration(labelText: 'Description'),
                 // ),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: _editedPriceController,
                   decoration: InputDecoration(labelText: 'Price'),
                 ),
@@ -98,6 +99,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 //   decoration: InputDecoration(labelText: 'Old Price'),
                 // ),
                 TextField(
+                  keyboardType: TextInputType.number,
                   controller: _editedRateController,
                   decoration: InputDecoration(labelText: 'Rate'),
                 ),
@@ -362,9 +364,12 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 ),
                                 itemCount: imageSnapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  return Image.network(
-                                    imageSnapshot.data![index],
-                                    fit: BoxFit.cover,
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(
+                                      imageSnapshot.data![index],
+                                      fit: BoxFit.cover,
+                                    ),
                                   );
                                 },
                               );

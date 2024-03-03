@@ -59,39 +59,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => const SpecialOffers(),
-                  ));
-            },
-            child: Icon(
-              Icons.wallet_giftcard,
-              size: 40,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => const BestItems(),
-                    ));
-              },
-              child: Icon(
-                Icons.price_change,
-                size: 40,
-              ),
-            ),
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(82, 170, 94, 1.0),
         onPressed: () {
@@ -173,7 +140,7 @@ class _MainScreenState extends State<MainScreen> {
 
   List<GDPData> getChartData() {
     final List<GDPData> chartData = [
-      GDPData('Shampoo', 432),
+      // GDPData('Shampoo', 432),
       GDPData('Soup', 453),
       GDPData('Grocery', 743),
       GDPData('Plastice', 633),
@@ -185,7 +152,7 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Product> getProductData() {
     final List<Product> products = [
-      Product('Shampoo', 10, 2, 'assets/1522664.avif'),
+      // Product('Shampoo', 10, 2, 'assets/1522664.avif'),
       Product('Soup', 15, 1, 'assets/pngimg.com - soup_PNG39.png'),
       Product('Grocery', 20, 3, 'assets/54018-9-grocery-free-hq-image.png'),
       Product('Pizza', 8, 5, 'assets/pizza-transparent-background-png.webp'),

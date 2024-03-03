@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:inventory/items.dart';
 import 'package:inventory/makeCategory.dart';
 import 'package:inventory/snackBar.dart';
+import 'package:inventory/specialOffers.dart';
 import 'package:inventory/uploadItem.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -29,6 +30,24 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         child: const Icon(Icons.add, color: Colors.white, size: 25),
       ),
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => const SpecialOffers(),
+                    ));
+              },
+              child: Icon(
+                Icons.wallet_giftcard,
+                size: 40,
+              ),
+            ),
+          ),
+        ],
         title: const Text('Categories'),
       ),
       body: StreamBuilder(
@@ -92,91 +111,107 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      editCategoryDialog(context, categoryName,
-                                          categoryImage, categoryId);
-                                    },
-                                    child: const Icon(Icons.edit)),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20, right: 10),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title:
-                                                  const Text('Delete Category'),
-                                              content: const Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                      'Are you really want to delete this Category ?')
-                                                ],
-                                              ),
-                                              actions: [
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    // Update the data in Firestore with new values
-                                                    FirebaseFirestore.instance
-                                                        .collection(
-                                                            'categories')
-                                                        .doc(categoryId)
-                                                        .delete();
-                                                    await FirebaseFirestore
-                                                        .instance
-                                                        .collection(
-                                                            'categories')
-                                                        .doc(categoryId)
-                                                        .collection(
-                                                            categoryName)
-                                                        .get()
-                                                        .then(
-                                                      (QuerySnapshot<
-                                                              Map<String,
-                                                                  dynamic>>
-                                                          querySnapshot) {
-                                                        querySnapshot.docs
-                                                            .forEach(
-                                                          (QueryDocumentSnapshot<
-                                                                  Map<String,
-                                                                      dynamic>>
-                                                              document) {
-                                                            document.reference
-                                                                .delete();
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-
-                                                    Navigator.pop(
-                                                        context); // Close the dialog
-                                                  },
-                                                  child: const Text('Delete'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(
-                                                        context); // Close the dialog without saving
-                                                  },
-                                                  child: const Text('Cancel'),
-                                                ),
-                                              ],
-                                            );
+                            categoryName == 'Best Products'
+                                ? const Padding(
+                                    padding: EdgeInsets.only(right: 20),
+                                    child: Icon(
+                                      Icons.edit_off,
+                                      color: Colors.red,
+                                    ),
+                                  )
+                                : Row(
+                                    children: [
+                                      GestureDetector(
+                                          onTap: () {
+                                            editCategoryDialog(
+                                                context,
+                                                categoryName,
+                                                categoryImage,
+                                                categoryId);
                                           },
-                                        );
-                                      },
-                                      child: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      )),
-                                )
-                              ],
-                            )
+                                          child: const Icon(Icons.edit)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 20, right: 10),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Delete Category'),
+                                                    content: const Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                            'Are you really want to delete this Category ?')
+                                                      ],
+                                                    ),
+                                                    actions: [
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Update the data in Firestore with new values
+                                                          FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  'categories')
+                                                              .doc(categoryId)
+                                                              .delete();
+                                                          await FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  'categories')
+                                                              .doc(categoryId)
+                                                              .collection(
+                                                                  categoryName)
+                                                              .get()
+                                                              .then(
+                                                            (QuerySnapshot<
+                                                                    Map<String,
+                                                                        dynamic>>
+                                                                querySnapshot) {
+                                                              querySnapshot.docs
+                                                                  .forEach(
+                                                                (QueryDocumentSnapshot<
+                                                                        Map<String,
+                                                                            dynamic>>
+                                                                    document) {
+                                                                  document
+                                                                      .reference
+                                                                      .delete();
+                                                                },
+                                                              );
+                                                            },
+                                                          );
+
+                                                          Navigator.pop(
+                                                              context); // Close the dialog
+                                                        },
+                                                        child: const Text(
+                                                            'Delete'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context); // Close the dialog without saving
+                                                        },
+                                                        child: const Text(
+                                                            'Cancel'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            )),
+                                      )
+                                    ],
+                                  )
                           ],
                         ),
                       ),

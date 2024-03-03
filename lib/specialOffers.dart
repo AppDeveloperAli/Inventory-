@@ -68,6 +68,38 @@ class _SpecialOffersState extends State<SpecialOffers> {
     );
   }
 
+  TextEditingController discountController = TextEditingController();
+  TextEditingController shippingController = TextEditingController();
+
+  @override
+  void dispose() {
+    discountController.dispose();
+    shippingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updateSettings() async {
+    String discount = discountController.text;
+    String shipping = shippingController.text;
+
+    // Perform Firebase update here
+    FirebaseFirestore.instance
+        .collection('special')
+        .doc('UYmil6gQ34PgL51cLxcS')
+        .update({
+      'discount': discount,
+      'shiping': shipping,
+    });
+
+    // Clear text field values after update
+    discountController.clear();
+    shippingController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Discount and Shipping updated successfully'),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,6 +133,25 @@ class _SpecialOffersState extends State<SpecialOffers> {
                     onPressed: _uploadImages,
                     child: Text('Upload Images'),
                   ),
+          ),
+          // here
+          TextField(
+            controller: discountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Discount',
+            ),
+          ),
+          TextField(
+            controller: shippingController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Shipping',
+            ),
+          ),
+          ElevatedButton(
+            onPressed: _updateSettings,
+            child: Text('Update'),
           ),
         ],
       ),
