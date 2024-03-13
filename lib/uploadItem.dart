@@ -13,10 +13,14 @@ class UploadItemsScreen extends StatefulWidget {
   String title;
   String? image;
   File? imag;
-  final List<File>? images;
+  // final List<File>? images;
 
   UploadItemsScreen(
-      {super.key, required this.title, this.images, this.image, this.imag});
+      {super.key,
+      required this.title,
+      //  this.images,
+      this.image,
+      this.imag});
 
   @override
   State<UploadItemsScreen> createState() => _UploadItemsScreenState();
@@ -92,6 +96,8 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
         downloadURLs.add(downloadURL);
       }
 
+      String? urlCategory = await _uploadImageToFirebase(widget.imag!);
+
       // Query the collection based on categoryName
       QuerySnapshot querySnapshot = await firestore
           .collection('categories')
@@ -105,8 +111,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
       if (documentId != null) {
         Map<String, dynamic> productData = {
           'categoryName': widget.title,
-          'categoryImage':
-              downloadURLs[0], // Assuming the first image is category image
+          'categoryImage': urlCategory,
           'productDescription': productDescriptionController.text,
           'productName': productNameController.text,
           'productUnits': _parseDouble(productUnitsController.text),
@@ -159,8 +164,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
 
         Map<String, dynamic> mainCollectionData = {
           'categoryName': widget.title,
-          'categoryImage':
-              downloadURLs[0], // Assuming the first image is category image
+          'categoryImage': urlCategory,
           'subcollectionData': null,
         };
 
@@ -173,7 +177,7 @@ class _UploadItemsScreenState extends State<UploadItemsScreen> {
             mainCollectionRef.collection(widget.title);
 
         Map<String, dynamic> subcollectionData = {
-          'productCategory': widget.title,
+          'categoryName': widget.title,
           'productDescription': productDescriptionController.text,
           'productName': productNameController.text,
           'productUnits': _parseDouble(productUnitsController.text),

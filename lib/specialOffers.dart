@@ -53,7 +53,7 @@ class _SpecialOffersState extends State<SpecialOffers> {
       _images.clear();
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Images uploaded successfully'),
     ));
     setState(() {
@@ -70,17 +70,23 @@ class _SpecialOffersState extends State<SpecialOffers> {
 
   TextEditingController discountController = TextEditingController();
   TextEditingController shippingController = TextEditingController();
+  TextEditingController packingChargesController = TextEditingController();
+  TextEditingController deliveryTaxController = TextEditingController();
 
   @override
   void dispose() {
     discountController.dispose();
     shippingController.dispose();
+    packingChargesController.dispose();
+    deliveryTaxController.dispose();
     super.dispose();
   }
 
   Future<void> _updateSettings() async {
     String discount = discountController.text;
     String shipping = shippingController.text;
+    String packingCharges = packingChargesController.text;
+    String deliveryCharges = deliveryTaxController.text;
 
     // Perform Firebase update here
     FirebaseFirestore.instance
@@ -89,13 +95,17 @@ class _SpecialOffersState extends State<SpecialOffers> {
         .update({
       'discount': discount,
       'shiping': shipping,
+      'deliveryTax': deliveryCharges,
+      'packingCharges': packingCharges,
     });
 
     // Clear text field values after update
     discountController.clear();
     shippingController.clear();
+    packingChargesController.clear();
+    deliveryTaxController.clear();
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Discount and Shipping updated successfully'),
     ));
   }
@@ -104,13 +114,13 @@ class _SpecialOffersState extends State<SpecialOffers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Special Banner Images'),
+        title: const Text('Upload Special Banner Images'),
       ),
       body: Column(
         children: [
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 5,
                 mainAxisSpacing: 5,
@@ -123,35 +133,61 @@ class _SpecialOffersState extends State<SpecialOffers> {
           ),
           ElevatedButton(
             onPressed: _pickImages,
-            child: Text('Pick Images'),
+            child: const Text('Pick Images'),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 20, bottom: 20),
             child: isLoading
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _uploadImages,
-                    child: Text('Upload Images'),
+                    child: const Text('Upload Images'),
                   ),
           ),
           // here
-          TextField(
-            controller: discountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Discount',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: discountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Discount',
+              ),
             ),
           ),
-          TextField(
-            controller: shippingController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Shipping',
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: shippingController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Shipping',
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: packingChargesController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Packing Charges',
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: deliveryTaxController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Delivery Tax',
+              ),
             ),
           ),
           ElevatedButton(
             onPressed: _updateSettings,
-            child: Text('Update'),
+            child: const Text('Update'),
           ),
         ],
       ),
